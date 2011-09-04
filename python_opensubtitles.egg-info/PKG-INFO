@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: python-opensubtitles
+Version: 0.1dev
+Summary: Wrapper to use the OpenSubtitles API easily
+Home-page: http://twitter.com/agonzalezro
+Author: Álex González
+Author-email: agonzalezro@gmail.com
+License: GPL
+Description: UNKNOWN
+Keywords: opensubtitles python api
+Platform: UNKNOWN
