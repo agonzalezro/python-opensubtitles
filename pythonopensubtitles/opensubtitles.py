@@ -29,9 +29,8 @@ class OpenSubtitles(object):
 
     def search_subtitles(self, token, params):
         data = self.xmlrpc.SearchSubtitles(token, params)
-        return data
-        # array SearchSubtitles( $token, array(array('sublanguageid' => $sublanguageid, 'moviehash' => $moviehash, 'moviebytesize' => $moviesize, imdbid => $imdbid, query => 'movie name' ),array(...)))
-        raise NotImplementedError
+        if '200' in data.get('status'):
+            return data.get('data')
 
     def search_to_mail(self):
         # array SearchToMail( $token, array( $sublanguageid, $sublanguageid, ...), array( array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), ...) )'

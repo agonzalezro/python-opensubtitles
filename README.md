@@ -45,5 +45,4 @@ subtitles database. This class is a wrapper to the common methods at OS.
 # Search subtitles
 
     >>> data = os.search_subtitles(token, [{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
-    >>> assert ('200' in data.get('status')) == True
-    >>> assert type(data) == dict
+    >>> assert type(data) == list
