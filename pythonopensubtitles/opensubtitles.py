@@ -14,23 +14,27 @@ class OpenSubtitles(object):
                                   allow_none=True)
         self.language = language or Settings.LANGUAGE
 
+    def get_from_data_or_none(self, key):
+        """Return the key getted from data if the status is 200,
+        otherwise return None.
+        """
+        status, _ = self.data.get('status').split()
+        return self.data.get(key) if '200' == status else None
+
     def login(self, username, password):
         """Returns token is login is ok, otherwise None."""
-        data = self.xmlrpc.LogIn(username, password,
+        self.data = self.xmlrpc.LogIn(username, password,
                                  self.language, Settings.USER_AGENT)
-        if '200' in data.get('status'):
-            return data.get('token')
+        return self.get_from_data_or_none('token')
 
     def logout(self, token):
         """Returns True is logout is ok, otherwise None."""
         data = self.xmlrpc.LogOut(token)
-        if '200' in data.get('status'):
-            return True
+        return '200' in data.get('status')
 
     def search_subtitles(self, token, params):
-        data = self.xmlrpc.SearchSubtitles(token, params)
-        if '200' in data.get('status'):
-            return data.get('data')
+        self.data = self.xmlrpc.SearchSubtitles(token, params)
+        return self.get_from_data_or_none('data')
 
     def search_to_mail(self):
         # array SearchToMail( $token, array( $sublanguageid, $sublanguageid, ...), array( array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), ...) )'
