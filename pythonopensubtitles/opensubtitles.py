@@ -18,7 +18,7 @@ class OpenSubtitles(object):
         """Return the key getted from data if the status is 200,
         otherwise return None.
         """
-        status, _ = self.data.get('status').split()
+        status = self.data.get('status').split()[0]
         return self.data.get(key) if '200' == status else None
 
     def login(self, username, password):
