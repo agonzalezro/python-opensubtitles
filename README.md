@@ -64,7 +64,7 @@ subtitles database. This class is a wrapper to the common methods at OS.
 
 # Try to upload subtitles
 
-    Before upload a subtitle you always need to check if it exists on the database:
+Before upload a subtitle you always need to check if it exists on the database:
 
     >>> params = [{'cd1': [{'submd5hash': md5,
     ...                     'subfilename': Test.subtitle,
@@ -75,9 +75,9 @@ subtitles database. This class is a wrapper to the common methods at OS.
 
 # Upload subtitles
 
-    **This method is not working for the momment!**
+**This method is not working for the momment!**
 
-    We will use the params of the above method to send them to search_subtitles method too.
+We will use the params of the above method to send them to search\_subtitles method too.
 
     >>> from pythonopensubtitles.utils import get_gzip_base64_encoded
     >>> params = [{'idmovieimdb': imdb_id,
