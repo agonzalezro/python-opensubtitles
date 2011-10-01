@@ -6,6 +6,8 @@ subtitles database. This class is a wrapper to the common methods at OS.
 
 # Configuring the test environment
 
+Before start to running the test (if you are only reading the documentation, of course, you don't need to do it :D) you must provide a correct video path and subtitle path.
+
     >>> from os import path
     >>> class Test(object):
     ...     username = 'doctest'
@@ -19,10 +21,14 @@ subtitles database. This class is a wrapper to the common methods at OS.
 
 # First steps
 
+Typicall import and creation of the OpenSubitles wrapper.
+
     >>> from pythonopensubtitles.opensubtitles import OpenSubtitles
     >>> os = OpenSubtitles()
 
 # Login
+
+To most of the OpenSubtitles methods you must send a token, this token is given to you by the api after the use of the login method.
 
     >>> token = os.login('bad@mail.com', 'badpassword')
     >>> assert token == None
@@ -30,6 +36,8 @@ subtitles database. This class is a wrapper to the common methods at OS.
     >>> assert type(token) == str
 
 # Creating a video hash
+
+To search subtitles, upload subtitles... a video hash token must be provided. You can find a generator under this module utils.
 
     >>> from pythonopensubtitles.utils import File
     >>> f = File(path.join(Test.path, Test.video))
@@ -43,20 +51,28 @@ subtitles database. This class is a wrapper to the common methods at OS.
 
 # Search subtitles
 
+If you search for a subtitle you will receive a list of all the subtitles saved at server.
+
     >>> data = os.search_subtitles(token, [{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
     >>> assert type(data) == list
 
 # Getting the IMDB id
+
+The info that you got on the method above provides you a imdb id, you must get it to try to upload subtitles.
 
     >>> imdb_id = int(data[0].get('IDMovieImdb'))
     >>> assert type(imdb_id) == int
 
 # Search a movie at IMDB
 
+If you don't know the imdb (perhaps the film is very new and it doesn't have subtitles yet), you can search it providing the film name.
+
     >>> data = os.search_movies_on_imdb(token, Test.name)
     >>> assert type(data) == dict
 
 # Get MD5 from a subtitle
+
+To know if the subtitle was uploaded correctly, a md5 of the file must be provided.
 
     >>> from pythonopensubtitles.utils import get_md5
     >>> md5 = get_md5(path.join(Test.path, Test.subtitle))
@@ -75,25 +91,27 @@ Before upload a subtitle you always need to check if it exists on the database:
 
 # Upload subtitles
 
-**This method is not working for the momment!**
+If the subtitle isn't on the database yet, you can upload it with the method ``upload_subtitles``.
 
-We will use the params of the above method to send them to search\_subtitles method too.
+You can take the ``cd1`` params from the method above, but for the documentation is more clear do it this way:
 
-    >>> from pythonopensubtitles.utils import get_gzip_base64_encoded
-    >>> params = [{'idmovieimdb': imdb_id,
-    ...            'cd1': [{'subhash': md5,
-    ...                     'subfilename': Test.subtitle,
-    ...                     'moviehash': hash,
-    ...                     'moviebytesize': size,
-    ...                     'moviefilename': Test.video,
-    ...                     'subcontent': get_gzip_base64_encoded(path.join(Test.path, Test.subtitle))}]}]
-    >>> params = [{'baseinfo': params}]
+    >>> from pythonopensubtitles.utils import get_gzip_base64_encodeda
     >>> if not already_in_db:
+    ...     params = {'baseinfo': {
+    ...                   'idmovieimdb': imdb_id},
+    ...               'cd1': {
+    ...                   'subhash': md5,
+    ...                   'subfilename': Test.subtitle,
+    ...                   'moviehash': hash,
+    ...                   'moviebytesize': size,
+    ...                   'moviefilename': Test.video,
+    ...                   'subcontent': get_gzip_base64_encoded(path.join(Test.path, Test.subtitle))}}
     ...     url = os.upload_subtitles(token, params)
-    ...     print url
-    ...     import pdb;pdb.set_trace()
+    ...     assert type(url) == str
 
 # Logout
+
+You can remove your session token.
 
     >>> data = os.logout(token)
     >>> assert data == True
