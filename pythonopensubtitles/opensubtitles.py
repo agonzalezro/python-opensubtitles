@@ -14,8 +14,9 @@ class OpenSubtitles(object):
         self.xmlrpc = ServerProxy(Settings.OPENSUBTITLES_SERVER,
                                   allow_none=True)
         self.language = language or Settings.LANGUAGE
+        self.token = None
 
-    def get_from_data_or_none(self, key):
+    def _get_from_data_or_none(self, key):
         '''Return the key getted from data if the status is 200,
         otherwise return None.
         '''
@@ -27,35 +28,53 @@ class OpenSubtitles(object):
         '''
         self.data = self.xmlrpc.LogIn(username, password,
                                  self.language, Settings.USER_AGENT)
-        return self.get_from_data_or_none('token')
+        token = self._get_from_data_or_none('token')
+        if token:
+            self.token = token
+        return token
 
-    def logout(self, token):
+    def logout(self):
         '''Returns True is logout is ok, otherwise None.
         '''
-        data = self.xmlrpc.LogOut(token)
+        data = self.xmlrpc.LogOut(self.token)
         return '200' in data.get('status')
 
-    def search_subtitles(self, token, params):
+    def search_subtitles(self, params):
         '''Returns a list with the subtitles info.
         '''
-        self.data = self.xmlrpc.SearchSubtitles(token, params)
-        return self.get_from_data_or_none('data')
+        self.data = self.xmlrpc.SearchSubtitles(self.token, params)
+        return self._get_from_data_or_none('data')
 
-    def try_upload_subtitles(self, token, params):
+    def try_upload_subtitles(self, params):
         '''Return True if the subtitle is on database, False if not.
         '''
-        self.data = self.xmlrpc.TryUploadSubtitles(token, params)
-        return self.get_from_data_or_none('alreadyindb') == 1
+        self.data = self.xmlrpc.TryUploadSubtitles(self.token, params)
+        return self._get_from_data_or_none('alreadyindb') == 1
 
-    def upload_subtitles(self, token, params):
+    def upload_subtitles(self, params):
         '''Returns the URL of the subtitle in case that the upload is OK,
         other case returns None.
         '''
-        self.data = self.xmlrpc.UploadSubtitles(token, params)
-        return self.get_from_data_or_none('data')
+        self.data = self.xmlrpc.UploadSubtitles(self.token, params)
+        return self._get_from_data_or_none('data')
 
-    def search_movies_on_imdb(self, token, params):
-        self.data = self.xmlrpc.SearchMoviesOnIMDB(token, params)
+    def no_operation(self):
+        '''Return True if the session is actived, False othercase.
+
+        .. note:: this method should be called 15 minutes after last request to
+                  the xmlrpc server.
+        '''
+        data = self.xmlrpc.NoOperation(self.token)
+        return '200' in data.get('status')
+
+    def auto_update(self, program):
+        '''Returns info of the program: last_version, url, comments...
+        '''
+        data = self.xmlrpc.AutoUpdate(program)
+        return data if '200' in data.get('status') else None
+
+    def search_movies_on_imdb(self, params):
+        self.data = self.xmlrpc.SearchMoviesOnIMDB(self.token, params)
         return self.data
 
     def search_to_mail(self):
@@ -124,12 +143,4 @@ class OpenSubtitles(object):
 
     def add_request(self):
         # array AddRequest( $token, array('sublanguageid' => $sublanguageid, 'idmovieimdb' => $idmovieimdb, 'comment' => $comment ) )
-        raise NotImplementedError
-
-    def auto_update(self):
-        # array AutoUpdate ( $program_name )
-        raise NotImplementedError
-
-    def no_operation(self):
-        # array NoOperation( $token )
         raise NotImplementedError
