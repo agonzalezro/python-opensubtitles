@@ -54,7 +54,8 @@ You can find a generator under this module utils.
 # Getting video size
 
     >>> size = f.size
-    >>> assert type(size) == long
+    >>> assert type(size) == str  # As str is easier to deal with long sizes
+    >>> assert long(size)  # But even being a string, it can be casted
 
 # Search subtitles
 

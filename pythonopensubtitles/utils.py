@@ -20,7 +20,7 @@ def get_md5(file_path):
 class File(object):
     def __init__(self, path):
         self.path = path
-        self.size = os.path.getsize(path)
+        self.size = size(os.path.getsize(path))
 
     def get_hash(self):
         '''Original from: http://goo.gl/qqfM0
@@ -33,9 +33,9 @@ class File(object):
         except(IOError):
             return "IOError"
 
-        hash = self.size
+        hash = int(self.size)
 
-        if self.size < 65536 * 2:
+        if int(self.size) < 65536 * 2:
             return "SizeError"
 
         for x in range(65536 / bytesize):
@@ -44,7 +44,7 @@ class File(object):
             hash += l_value
             hash = hash & 0xFFFFFFFFFFFFFFFF  # to remain as 64bit number
 
-        f.seek(max(0, self.size - 65536), 0)
+        f.seek(max(0, int(self.size) - 65536), 0)
         for x in range(65536 / bytesize):
             buffer = f.read(bytesize)
             (l_value, ) = struct.unpack(longlongformat, buffer)
@@ -53,4 +53,4 @@ class File(object):
 
         f.close()
         returnedhash = "%016x" % hash
-        return returnedhash
+        return str(returnedhash)
