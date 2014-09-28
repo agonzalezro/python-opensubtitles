@@ -53,4 +53,4 @@ class File(object):
 
         f.close()
         returnedhash = "%016x" % hash
-        return returnedhash
+        return str(returnedhash)
