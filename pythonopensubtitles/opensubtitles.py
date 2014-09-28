@@ -1,4 +1,4 @@
-from xmlrpclib import ServerProxy
+from xmlrpclib import ServerProxy, Marshaller
 
 from settings import Settings
 
@@ -13,6 +13,7 @@ class OpenSubtitles(object):
     def __init__(self, language=None):
         self.xmlrpc = ServerProxy(Settings.OPENSUBTITLES_SERVER,
                                   allow_none=True)
+        Marshaller.dispatch[type(0L)] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
         self.language = language or Settings.LANGUAGE
         self.token = None
 
