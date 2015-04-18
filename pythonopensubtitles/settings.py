@@ -1,4 +1,4 @@
 class Settings(object):
     OPENSUBTITLES_SERVER = 'http://api.opensubtitles.org/xml-rpc'
-    USER_AGENT = 'OS Test User Agent'
+    USER_AGENT = 'OSTestUserAgent'
     LANGUAGE = 'en'
