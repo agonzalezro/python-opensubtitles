@@ -20,7 +20,7 @@ def get_md5(file_path):
 class File(object):
     def __init__(self, path):
         self.path = path
-        self.size = size(os.path.getsize(path))
+        self.size = str(os.path.getsize(path))
 
     def get_hash(self):
         '''Original from: http://goo.gl/qqfM0
