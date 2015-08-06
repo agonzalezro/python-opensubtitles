@@ -4,6 +4,11 @@ python-opensubtitles
 Simple module to access to the [OpenSubtitles.org](http://opensubtitles.org)
 subtitles database. This class is a wrapper to the common methods at OS.
 
+# Installing Notes
+
+If you are installing this using `pip`, please use the following format:
+`pip install -e git+<github repo url>#egg=python-opensubtitles`
+
 # Configuring the test environment
 
 Before start to running the test (if you are only reading the documentation,

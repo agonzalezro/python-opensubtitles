@@ -7,3 +7,6 @@ python_opensubtitles.egg-info/entry_points.txt
 python_opensubtitles.egg-info/not-zip-safe
 python_opensubtitles.egg-info/top_level.txt
 pythonopensubtitles/__init__.py
+pythonopensubtitles/opensubtitles.py
+pythonopensubtitles/settings.py
+pythonopensubtitles/utils.py
