@@ -1,3 +1,0 @@
-Django==1.8.2
--e git+https://github.com/coolharsh55/python-opensubtitles@f37074796ee72c7efe1aa3ec2d534b4299b8fd88#egg=python_opensubtitles-master
-wheel==0.24.0

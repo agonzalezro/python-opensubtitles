@@ -7,7 +7,7 @@ subtitles database. This class is a wrapper to the common methods at OS.
 # Installing Notes
 
 If you are installing this using `pip`, please use the following format:
-`pip install -e git+<github repo url>#egg=python-opensubtitles`
+`pip install -e git+http://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles`
 
 # Configuring the test environment
 
