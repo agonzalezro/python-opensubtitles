@@ -1,6 +1,9 @@
-from xmlrpclib import ServerProxy
-
-from settings import Settings
+try:                    #Python 2
+    from xmlrpclib import ServerProxy
+    from settings import Settings
+except ImportError:     #Python 3
+    from xmlrpc.client import ServerProxy
+    from .settings import Settings
 
 
 class OpenSubtitles(object):
