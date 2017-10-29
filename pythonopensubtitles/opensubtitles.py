@@ -1,3 +1,8 @@
+import base64
+import os.path
+import sys
+import zlib
+
 try:                    #Python 2
     from xmlrpclib import ServerProxy
     from settings import Settings
@@ -104,9 +109,99 @@ class OpenSubtitles(object):
         # array DetectLanguage( $token, array($text, $text, ...) )
         raise NotImplementedError
 
-    def download_subtitles(self):
-        # array DownloadSubtitles( $token, array($IDSubtitleFile, $IDSubtitleFile,...) )
-        raise NotImplementedError
+    def download_subtitles(self, subfile_ids, ext='srt',
+                           filenames=None, directory=None):
+        """
+        Returns a dictionary with max. 20 IDs of and paths to all
+        successfully downloaded subtitle files, otherwise None.
+
+        subfile_ids can be None/empty if a filenames dict is present;
+        otherwise, the file IDs used by OpenSubtitles are used as file
+        names, with .srt as default file extension.
+
+        Keep in mind that subtitle searches can contain multiple
+        results for the same file title (because several different
+        file uploads might reference the same file name).
+        So, if you use a filenames dict in which different file IDs
+        reference the exact same file name (i.e. IDs with the same value),
+        the number of eventually downloaded files will be smaller than the
+        overall number of file IDs submitted (there can only be one file
+        per file name, so any subsequent download attempts for an already
+        existing file will overwrite the previous version of said file).
+
+        :param subfile_ids: list of ids of subtitle files to download
+        :param filenames: optional dictionary with preferred file names;
+                          for keys use subtitle file IDs (as strings),
+                          for values use file names (incl. file extensions)
+        :param ext: one of: srt, sub, txt, ssa, smi, mpi, tmp;
+                    only applicable if only subtitle file IDs are provided
+        :param directory: path to preferred dir to which to write files
+        """
+        successful = {}
+        if filenames:
+            subfile_ids = list(filenames.keys())
+
+        # OpenSubtitles will accept a maximum of 20 IDs for download
+        if len(subfile_ids) > 20:
+            print("Cannot download more than 20 files at once.",
+                  file=sys.stderr)
+            subfile_ids = subfile_ids[:20]
+
+        self.data = self.xmlrpc.DownloadSubtitles(self.token, subfile_ids)
+        encoded_data = self._get_from_data_or_none('data')
+
+        if encoded_data:
+            for item in encoded_data:
+                subfile_id = item['idsubtitlefile']
+
+                try:
+                    decoded_data = zlib.decompress(
+                        base64.b64decode(item['data']),
+                        16 + zlib.MAX_WBITS).decode('utf-8')
+                except UnicodeDecodeError as e:
+                    try:
+                        decoded_data = zlib.decompress(
+                            base64.b64decode(item['data']),
+                            16 + zlib.MAX_WBITS).decode('latin1')
+                    except Exception as e:
+                        print("An error occurred during file decoding.",
+                              file=sys.stderr)
+                        print(e)
+                        continue
+                except Exception as e:
+                    print("An error occurred during file decoding.",
+                          file=sys.stderr)
+                    print(e)
+                    continue
+
+                if filenames:
+                    try:
+                        fpath = filenames[subfile_id]
+                    except Exception as e:
+                        print("'filenames' dictionary is not "
+                              "properly formatted. Exiting.", file=sys.stderr)
+                        sys.exit(1)
+                else:
+                    fpath = subfile_id + '.' + ext
+
+                if directory:
+                    fpath = os.path.join(directory, fpath)
+
+                try:
+                    with open(fpath, 'w') as f:
+                        f.write(decoded_data)
+                    successful[subfile_id] = fpath
+                except IOError as e:
+                    print(e)
+                except Exception as e:
+                    print("There was an error writing the subtitle data "
+                          "for file {}.".format(fpath),
+                          file=sys.stderr)
+                    print(e)
+
+        if successful:
+            return successful
+        return
 
     def report_wrong_movie_hash(self):
         # array ReportWrongMovieHash( $token, $IDSubMovieFile )
