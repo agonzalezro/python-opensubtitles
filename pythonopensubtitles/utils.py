@@ -5,6 +5,21 @@ import zlib
 import base64
 
 
+def decompress(data, encoding):
+    """
+    Convert a base64-compressed subtitles file back to a string.
+
+    :param data: the compressed data
+    :param encoding: the encoding of the original file (e.g. utf-8, latin1)
+    """
+    try:
+        return zlib.decompress(base64.b64decode(data),
+                               16 + zlib.MAX_WBITS).decode(encoding)
+    except UnicodeDecodeError as e:
+        print(e)
+        return
+
+
 def get_gzip_base64_encoded(file_path):
     handler = open(file_path, mode='rb').read()
     return base64.encodestring(zlib.compress(handler))
