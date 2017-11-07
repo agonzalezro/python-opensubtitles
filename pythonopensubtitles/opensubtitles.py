@@ -1,7 +1,6 @@
-import base64
+from .utils import decompress
 import os.path
 import sys
-import zlib
 
 try:                    #Python 2
     from xmlrpclib import ServerProxy
@@ -9,36 +8,6 @@ try:                    #Python 2
 except ImportError:     #Python 3
     from xmlrpc.client import ServerProxy
     from .settings import Settings
-
-
-def decompress_utf_8(data):
-    """
-    Convert a base64-compressed subtitles file with utf-8 encoding
-    back to a string.
-    """
-    decompressed = None
-    try:
-        decompressed = zlib.decompress(base64.b64decode(data),
-                                       16 + zlib.MAX_WBITS).decode('utf-8')
-    except UnicodeDecodeError as e:
-        print(e)
-
-    return decompressed
-
-
-def decompress_latin(data):
-    """
-    Convert a base64-compressed subtitles file with latin-1 encoding
-    back to a string.
-    """
-    decompressed = None
-    try:
-        decompressed = zlib.decompress(base64.b64decode(data),
-                                       16 + zlib.MAX_WBITS).decode('latin1')
-    except UnicodeDecodeError as e:
-        print(e)
-
-    return decompressed
 
 
 class OpenSubtitles(object):
@@ -179,8 +148,8 @@ class OpenSubtitles(object):
         for item in encoded_data:
             subfile_id = item['idsubtitlefile']
 
-            decoded_data = (decompress_utf_8(item['data'])
-                            or decompress_latin(item['data']))
+            decoded_data = (decompress(item['data'], 'utf-8')
+                            or decompress(item['data'], 'latin1'))
 
             if not decoded_data:
                 print("An error occurred while decoding subtitle "
