@@ -1,3 +1,7 @@
+from .utils import decompress
+import os.path
+import sys
+
 try:                    #Python 2
     from xmlrpclib import ServerProxy
     from settings import Settings
@@ -104,9 +108,67 @@ class OpenSubtitles(object):
         # array DetectLanguage( $token, array($text, $text, ...) )
         raise NotImplementedError
 
-    def download_subtitles(self):
-        # array DownloadSubtitles( $token, array($IDSubtitleFile, $IDSubtitleFile,...) )
-        raise NotImplementedError
+    def download_subtitles(self, ids, override_filenames=None,
+                           output_directory='.', extension='srt'):
+        """
+        Returns a dictionary with max. 20 IDs of and paths to all
+        successfully downloaded subtitle files, otherwise None.
+
+        Be aware that if you provide an override_filenames dictionary
+        containing duplicate values (the same file name for different
+        subtitle IDs), you will end up with only one subtitle file with
+        that file name as each new download overrides any already
+        existing file with the same name. I.e. the total of downloaded
+        files will be smaller than the number of submitted IDs.
+
+        :param ids: list of ids of subtitle files to download
+        :param override_filenames: optional dictionary with preferred file
+                names; for keys use subtitle file IDs (as strings),
+                for values use file names (incl. file extensions)
+        :param extension: one of: srt, sub, txt, ssa, smi, mpi, tmp;
+                only applicable if only subtitle file IDs are provided
+        :param output_directory: path to directory to which to write files
+                (defaults to directory the script is run in)
+        """
+        override_filenames = override_filenames or {}
+        successful = {}
+
+        # OpenSubtitles will accept a maximum of 20 IDs for download
+        if len(ids) > 20:
+            print("Cannot download more than 20 files at once.",
+                  file=sys.stderr)
+            ids = ids[:20]
+
+        self.data = self.xmlrpc.DownloadSubtitles(self.token, ids)
+        encoded_data = self._get_from_data_or_none('data')
+
+        if not encoded_data:
+            return
+
+        for item in encoded_data:
+            subfile_id = item['idsubtitlefile']
+
+            decoded_data = (decompress(item['data'], 'utf-8')
+                            or decompress(item['data'], 'latin1'))
+
+            if not decoded_data:
+                print("An error occurred while decoding subtitle "
+                      "file ID {}.".format(subfile_id), file=sys.stderr)
+            else:
+                fname = override_filenames.get(subfile_id,
+                                               subfile_id + '.' + extension)
+                fpath = os.path.join(output_directory, fname)
+
+                try:
+                    with open(fpath, 'w') as f:
+                        f.write(decoded_data)
+                    successful[subfile_id] = fpath
+                except IOError as e:
+                    print("There was an error writing file {}.".format(fpath),
+                          file=sys.stderr)
+                    print(e)
+
+        return successful or None
 
     def report_wrong_movie_hash(self):
         # array ReportWrongMovieHash( $token, $IDSubMovieFile )
