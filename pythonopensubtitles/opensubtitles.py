@@ -1,12 +1,13 @@
 from .utils import decompress
+import os
 import os.path
 import sys
 
 try:                    #Python 2
-    from xmlrpclib import ServerProxy
+    from xmlrpclib import ServerProxy, Transport
     from settings import Settings
 except ImportError:     #Python 3
-    from xmlrpc.client import ServerProxy
+    from xmlrpc.client import ServerProxy, Transport
     from .settings import Settings
 
 
@@ -17,11 +18,27 @@ class OpenSubtitles(object):
     http://trac.opensubtitles.org/projects/opensubtitles/wiki/XMLRPC
     '''
 
-    def __init__(self, language=None):
-        self.xmlrpc = ServerProxy(Settings.OPENSUBTITLES_SERVER,
-                                  allow_none=True)
+    def __init__(self, language=None, user_agent=None):
+        """
+        Initialize the OpenSubtitles client
+        
+        :param language: language for login
+        :param user_agent: User Agent to include with requests.
+            Can be specified here, via the OS_USER_AGENT environment variable,
+            or via Settings.USER_AGENT (default)
+            
+            For more information: http://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst#Howtorequestanewuseragent 
+        """
         self.language = language or Settings.LANGUAGE
         self.token = None
+        self.user_agent = user_agent or os.getenv('OS_USER_AGENT') or Settings.USER_AGENT
+
+        transport = Transport()
+        transport.user_agent = self.user_agent
+
+        self.xmlrpc = ServerProxy(Settings.OPENSUBTITLES_SERVER,
+                                  allow_none=True, transport=transport)
+
 
     def _get_from_data_or_none(self, key):
         '''Return the key getted from data if the status is 200,
@@ -34,7 +51,7 @@ class OpenSubtitles(object):
         '''Returns token is login is ok, otherwise None.
         '''
         self.data = self.xmlrpc.LogIn(username, password,
-                                 self.language, Settings.USER_AGENT)
+                                 self.language, self.user_agent)
         token = self._get_from_data_or_none('token')
         if token:
             self.token = token
