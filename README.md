@@ -1,19 +1,18 @@
-python-opensubtitles
-===
+# python-opensubtitles
 
 Simple module to access to the [OpenSubtitles.org](http://opensubtitles.org)
-subtitles database. This class is a wrapper to the common methods at OS.
+subtitles database. This class is a wrapper for the common methods used by the OpenSubtitles API.
 
-# Installing Notes
+## Install Notes
 
-If you are installing this using `pip`, please use the following format:
-`pip install -e git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles`
+If you are installing this module with `pip`, please use the following path to use the latest version:
+```
+pip install -e git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles
+```
 
-# Configuring the test environment
+## Configuring the test environment
 
-Before start to running the test (if you are only reading the documentation,
-of course, you don't need to do it :D) you must provide a correct video path
-and subtitle path.
+Before you start running tests (if you are only reading the documentation, of course, you don't need to do it :D), you must provide a correct video path and subtitle path.
 
     >>> from os import path
     >>> class Test(object):
@@ -26,93 +25,86 @@ and subtitle path.
     ...     video = 'Dark.City.1998.Directors.Cut.BRRip.H264.AAC.5.1ch.Gopo.mp4'
     ...     subtitle = 'Dark.City.1998.Directors.Cut.BRRip.H264.AAC.5.1ch.Gopo.srt'
 
-# First steps
+## First steps
 
-Typicall import and creation of the OpenSubitles wrapper.
+Example for a typical import and creation of the OpenSubitles wrapper:
 
     >>> from pythonopensubtitles.opensubtitles import OpenSubtitles
     >>> os = OpenSubtitles()
 
-# Login
+## Login
 
-To most of the OpenSubtitles methods you must send a token, this token is given
-to you by the api after the use of the login method.
+For most OpenSubtitles methods you must send a token. This token is given to you by the API after the use of the login method.
 
-    >>> token = os.login('bad@mail.com', 'badpassword')
+    >>> token = ost.login('bad@mail.com', 'badpassword')
     >>> assert token == None
-    >>> token = os.login(Test.username, Test.password)
+    >>> token = ost.login(Test.username, Test.password)
     >>> assert type(token) == str
 
-This token will be saved as an attrib of the OpenSubtitle class, so you don't
-need to send it always to the methods.
+The token will be saved as an attribute of the OpenSubtitle class, so you don't need to send it again when using other methods.
 
-# Creating a video hash
+## Creating a video hash
 
-To search subtitles, upload subtitles... a video hash token must be provided.
-You can find a generator under this module utils.
+To search for subtitles for a specific file, a hash token for this file must be provided. You can find a file hash generator in this module's `utils`.
 
     >>> from pythonopensubtitles.utils import File
     >>> f = File(path.join(Test.path, Test.video))
     >>> hash = f.get_hash()
     >>> assert type(hash) == str
 
-# Getting video size
+## Getting video size
 
     >>> size = f.size
     >>> assert type(size) == str  # As str is easier to deal with long sizes
     >>> assert long(size)  # But even being a string, it can be casted
 
-# Search subtitles
+## Search for subtitles
 
-If you search for a subtitle you will receive a list of all the subtitles saved
-at server.
+If you do a simple search for a subtitle, you will receive a list of all matching subtitles saved on the server.
 
-    >>> data = os.search_subtitles([{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
+    >>> data = ost.search_subtitles([{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
     >>> assert type(data) == list
 
-# Getting the IMDB id
+## Getting the IMDb ID
 
-The info that you got on the method above provides you a imdb id, you must get
-it to try to upload subtitles.
+The info you received with the search method also includes an IMDb ID, which you need if you want to try to upload subtitles.
 
     >>> imdb_id = int(data[0].get('IDMovieImdb'))
     >>> assert type(imdb_id) == int
 
-# Search a movie at IMDB
+## Search for a movie on IMDb
 
-If you don't know the imdb (perhaps the film is very new and it doesn't have
-subtitles yet), you can search it providing the film name.
+If you don't know the IMDb ID and cannot get it through opensubtitles.org – perhaps the film is very new and no-one has uploaded any subtitles for it yet –, you can search for it directly in IMDb's database by providing the film's name.
 
-    >>> data = os.search_movies_on_imdb(Test.name)
+    >>> data = ost.search_movies_on_imdb(Test.name)
     >>> assert type(data) == dict
 
-# Get MD5 from a subtitle
+## Get MD5 for a subtitle file
 
-To know if the subtitle was uploaded correctly, a md5 of the file must be
-provided.
+To make sure a subtitle was uploaded correctly, an MD5 hash of the file must be provided.
 
     >>> from pythonopensubtitles.utils import get_md5
     >>> md5 = get_md5(path.join(Test.path, Test.subtitle))
     >>> assert type(md5) == str
 
-# Try to upload subtitles
+## Upload of subtitles
 
-Before upload a subtitle you always need to check if it exists on the database:
+### Check for existence of subtitle first
+
+Before uploading a subtitle, you always need to check if it already exists on opensubtitles.org:
 
     >>> params = [{'cd1': [{'submd5hash': md5,
     ...                     'subfilename': Test.subtitle,
     ...                     'moviehash': hash,
     ...                     'moviebytesize': size}]}]
-    >>> already_in_db = os.try_upload_subtitles(params)
+    >>> already_in_db = ost.try_upload_subtitles(params)
     >>> assert type(already_in_db) == bool
 
-# Upload subtitles
+### Actual file upload
 
-If the subtitle isn't on the database yet, you can upload it with the method
-``upload_subtitles``.
+If the subtitle does not yet exist on opensubtitles.org, you can upload it with the method ``upload_subtitles``. For this, you can take the ``cd1`` parameters from the method for checking for the existence of a subtitle.
 
-You can take the ``cd1`` params from the method above, but for the documentation
-is more clear do it this way:
+For documentation purposes, it is more clear to do it this way:
 
     >>> from pythonopensubtitles.utils import get_gzip_base64_encoded
     >>> if not already_in_db:
@@ -125,27 +117,28 @@ is more clear do it this way:
     ...                   'moviebytesize': size,
     ...                   'moviefilename': Test.video,
     ...                   'subcontent': get_gzip_base64_encoded(path.join(Test.path, Test.subtitle))}}
-    ...     url = os.upload_subtitles(params)
+    ...     url = ost.upload_subtitles(params)
     ...     assert type(url) == str
 
-# Ping the server
 
-Each 15 minutes you need to ping the server to show that you are alive. To do
-it use the metho no\_operation:
+## Pinging the server
 
-    >>> os.no_operation()
+Every 15 minutes, you need to ping the server to show that you are alive. To do this, use the method `no_operation`:
+
+    >>> ost.no_operation()
     True
 
-# Auto update
 
-Get info of the last version of one of the porgrams at OpenSubtitiles DB.
+## Get info for OpenSubtitles software
 
-    >>> data = os.auto_update('SubDownloader')
+Get info for the latest version of one of the programs listed on opensubtitles.org.
+
+    >>> data = ost.auto_update('SubDownloader')
     >>> assert 'version' in data.keys()
 
-# Logout
+## Logout
 
 You can remove your session token with this method:
 
-    >>> os.logout()
+    >>> ost.logout()
     True
