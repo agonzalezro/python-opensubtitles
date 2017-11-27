@@ -106,9 +106,14 @@ class OpenSubtitles(object):
         # array SearchToMail( $token, array( $sublanguageid, $sublanguageid, ...), array( array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), ...) )'
         raise NotImplementedError
 
-    def check_subtitle_hash(self):
-        # array CheckSubHash( $token, array($subhash, $subhash, ...) )
-        raise NotImplementedError
+    def check_subtitle_hash(self,sub_hash):
+        '''Returns a dictionary where key is subtitle file hash and value is SubtitleFileID.
+        If subtitle file is not found then value is 0.
+
+        :param sub_hash: list of subtitle file hashes.
+        '''
+        self.data = self.xmlrpc.CheckSubHash(self.token, sub_hash)
+        return self._get_from_data_or_none('data')
 
     def check_movie_hash(self):
         # array CheckMovieHash( $token, array($moviehash, $moviehash, ...) )
