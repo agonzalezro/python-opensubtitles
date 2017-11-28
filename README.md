@@ -79,6 +79,13 @@ If you don't know the IMDb ID and cannot get it through opensubtitles.org – pe
     >>> data = ost.search_movies_on_imdb(Test.name)
     >>> assert type(data) == dict
 
+## Check if subtitle hash exists.
+
+Check if multiple subtitles exist on opensubtitles.org at once by passing the MD5 hash of all subtitle files as parameter.
+
+    >>> data = ost.check_subtitle_hash(['hash1','hash2'])
+    >>> assert type(data) == dict
+
 ## Get MD5 for a subtitle file
 
 To make sure a subtitle was uploaded correctly, an MD5 hash of the file must be provided.
