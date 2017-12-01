@@ -201,7 +201,6 @@ class OpenSubtitles(object):
 
     def report_wrong_movie_hash(self,id_sub_movie_file):
         '''Returns true if successfully reported wrong movie hash.
-
         :param id_sub_movie_file: identifier for subtitle file and video file combination.
         '''
         self.data = self.xmlrpc.ReportWrongMovieHash(self.token,id_sub_movie_file)
@@ -215,7 +214,6 @@ class OpenSubtitles(object):
 
     def get_available_translations(self,program):
         '''Returns dictionary containing all available translations for program.
-
         Note: Currently supported values for program are subdownloader/oscar
         '''
         self.data = self.xmlrpc.GetAvailableTranslations(self.token,program)

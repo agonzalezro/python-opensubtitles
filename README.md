@@ -182,7 +182,7 @@ Overuse of this function can result in UserAgent being disabled, instead use som
 
 ## Pinging the server
 
-Every  15 minutes, you need to ping the server to show that you are alive. To do this, use the method `no_operation`:
+Every 15 minutes, you need to ping the server to show that you are alive. To do this, use the method `no_operation`:
 
     >>> ost.no_operation()
     True
