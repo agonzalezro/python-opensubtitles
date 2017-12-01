@@ -128,9 +128,61 @@ For documentation purposes, it is more clear to do it this way:
     ...     assert type(url) == str
 
 
+## Check Movie Hash
+
+Get movie information by using the hash of movie file.
+
+    >>> data = ost.check_movie_hash([hash])
+    >>> assert type(data) == dict
+
+
+## Insert Movie hash
+
+Insert or update movie data on opensubtitles.org.
+moviehash,moviebytesize,and imdbid are required prameters rest are
+optional.
+
+    >>> data = ost.insert_movie_hash([{'moviehash':hash,'moviebytesize':size,'imdbid':imdb_id}])
+    >>> assert type(data) == dict
+
+## Report wrong movie hash
+
+If you find that the movie hash of subtitle file data is incorrect or is for some other release or version use this method to report it.Once enough people report, hash will be deleted from opensubtitles.org.
+
+    >>> data = ost.report_wrong_movie_hash([id_sub_movie_file])
+    True
+
+
+## Get subtitle languages
+
+Get all subtitle languages supported by opensubtitles.org.
+Returns language name, sub language id and iso639 code.
+
+    >>> data = ost.get_subtitle_languages()
+    >>> assert type(data) == list
+
+
+## Available translations
+
+Get all the available translations for a program.
+
+    >>> data = ost.get_available_translations('SubDownloader')
+    >>> assert type(data) == dict
+
+
+## Search Movie information from IMDB
+
+This method can be used to retrive movie information available on IMDB.
+Opensubtitles.org uses external program for retrieving info for every query.
+Overuse of this function can result in UserAgent being disabled, instead use some 3rd party library for retrieving info from IMDB.
+
+    >>> data = ost.get_imdb_movie_details(imdb_id)
+    >>> assert type(data) == dict
+
+
 ## Pinging the server
 
-Every 15 minutes, you need to ping the server to show that you are alive. To do this, use the method `no_operation`:
+Every  15 minutes, you need to ping the server to show that you are alive. To do this, use the method `no_operation`:
 
     >>> ost.no_operation()
     True
