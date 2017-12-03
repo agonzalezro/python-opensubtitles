@@ -115,17 +115,23 @@ class OpenSubtitles(object):
         self.data = self.xmlrpc.CheckSubHash(self.token, sub_hash)
         return self._get_from_data_or_none('data')
 
-    def check_movie_hash(self):
-        # array CheckMovieHash( $token, array($moviehash, $moviehash, ...) )
-        raise NotImplementedError
+    def check_movie_hash(self, movie_hash):
+        '''Returns a dictionary with hash as key and movie information as value.
+
+        :param movie_hash: list of hash of movies.
+        '''
+        self.data = self.xmlrpc.CheckMovieHash(self.token, movie_hash)
+        return self._get_from_data_or_none('data')
 
     def check_movie_hash_2(self):
         # array CheckMovieHash2( $token, array($moviehash, $moviehash, ...) )
         raise NotImplementedError
 
-    def insert_movie_hash(self):
-        # array InsertMovieHash( $token, array( array('moviehash' => $moviehash, 'moviebytesize' => $moviebytesize, 'imdbid' => $imdbid, 'movietimems' => $movietimems, 'moviefps' => $moviefps, 'moviefilename' => $moviefilename), array(...) ) )
-        raise NotImplementedError
+    def insert_movie_hash(self, params):
+        '''Returns accepted movie hashes and new IMDB ids.
+        '''
+        self.data = self.xmlrpc.InsertMovieHash(self.token, params)
+        return self._get_from_data_or_none('data')
 
     def detect_language(self):
         # array DetectLanguage( $token, array($text, $text, ...) )
@@ -193,25 +199,35 @@ class OpenSubtitles(object):
 
         return successful or None
 
-    def report_wrong_movie_hash(self):
-        # array ReportWrongMovieHash( $token, $IDSubMovieFile )
-        raise NotImplementedError
+    def report_wrong_movie_hash(self,id_sub_movie_file):
+        '''Returns true if successfully reported wrong movie hash.
+        :param id_sub_movie_file: identifier for subtitle file and video file combination.
+        '''
+        self.data = self.xmlrpc.ReportWrongMovieHash(self.token,id_sub_movie_file)
+        return '200' in self._get_from_data_or_none('status')
 
-    def get_subtitle_languages(self):
-        # array GetSubLanguages( $language = 'en' )
-        raise NotImplementedError
+    def get_subtitle_languages(self,language='en'):
+        '''Returns list of supported subtitle languages in specified langauge; default is english.
+        '''
+        self.data = self.xmlrpc.GetSubLanguages(language)
+        return self.data['data']
 
-    def get_available_translations(self):
-        # array GetAvailableTranslations( $token, $program )
-        raise NotImplementedError
+    def get_available_translations(self,program):
+        '''Returns dictionary containing all available translations for program.
+        Note: Currently supported values for program are subdownloader/oscar
+        '''
+        self.data = self.xmlrpc.GetAvailableTranslations(self.token,program)
+        return self._get_from_data_or_none('data')
 
     def get_translation(self):
         # array GetTranslation( $token, $iso639, $format, $program )
         raise NotImplementedError
 
-    def get_imdb_movie_details(self):
-        # array GetIMDBMovieDetails( $token, $imdbid )
-        raise NotImplementedError
+    def get_imdb_movie_details(self,imdb_id):
+        '''Returns movie information from IMDb.com
+        '''
+        self.data = self.xmlrpc.GetIMDBMovieDetails(self.token,imdb_id)
+        return self._get_from_data_or_none('data')
 
     def insert_movie(self):
         # array InsertMovie( $token, array('moviename' => $moviename, 'movieyear' => $movieyear) )
