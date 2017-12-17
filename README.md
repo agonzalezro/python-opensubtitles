@@ -13,7 +13,6 @@ pip install -e git+https://github.com/agonzalezro/python-opensubtitles#egg=pytho
 ## Configuring the test environment
 
 Before you start running tests (if you are only reading the documentation, of course, you don't need to do it :D), you must provide a correct video path and subtitle path.
-
     >>> from os import path
     >>> class Test(object):
     ...     username = 'doctest'
@@ -153,7 +152,7 @@ optional.
 
 If you find that the movie hash of subtitle file data is incorrect or is for some other release or version use this method to report it.Once enough people report, hash will be deleted from opensubtitles.org.
 
-    >>> data = ost.report_wrong_movie_hash([id_sub_movie_file])
+    >>> ost.report_wrong_movie_hash(id_sub_movie_file)
     True
 
 

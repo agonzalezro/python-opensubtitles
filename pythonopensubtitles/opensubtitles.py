@@ -204,7 +204,7 @@ class OpenSubtitles(object):
         :param id_sub_movie_file: identifier for subtitle file and video file combination.
         '''
         self.data = self.xmlrpc.ReportWrongMovieHash(self.token,id_sub_movie_file)
-        return '200' in self._get_from_data_or_none('status')
+        return '200' in self.data.get('status')
 
     def get_subtitle_languages(self,language='en'):
         '''Returns list of supported subtitle languages in specified langauge; default is english.
