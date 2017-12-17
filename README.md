@@ -30,7 +30,7 @@ Before you start running tests (if you are only reading the documentation, of co
 Example for a typical import and creation of the OpenSubitles wrapper:
 
     >>> from pythonopensubtitles.opensubtitles import OpenSubtitles
-    >>> os = OpenSubtitles()
+    >>> ost = OpenSubtitles()
 
 ## Login
 
@@ -63,6 +63,8 @@ To search for subtitles for a specific file, a hash token for this file must be 
 If you do a simple search for a subtitle, you will receive a list of all matching subtitles saved on the server.
 
     >>> data = ost.search_subtitles([{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
+    >>> id_subtitle = data[0].get('IDSubtitle')
+    >>> id_sub_movie_file = data[0].get('IDSubMovieFile')
     >>> assert type(data) == list
 
 ## Getting the IMDb ID
@@ -76,15 +78,9 @@ The info you received with the search method also includes an IMDb ID, which you
 
 If you don't know the IMDb ID and cannot get it through opensubtitles.org – perhaps the film is very new and no-one has uploaded any subtitles for it yet –, you can search for it directly in IMDb's database by providing the film's name.
 
-    >>> data = ost.search_movies_on_imdb(Test.name)
-    >>> assert type(data) == dict
+    >>> data = ost.search_movies_on_imdb(Test.name) # doctest: +SKIP
+    >>> assert type(data) == dict # doctest: +SKIP
 
-## Check if subtitle hash exists.
-
-Check if multiple subtitles exist on opensubtitles.org at once by passing the MD5 hash of all subtitle files as parameter.
-
-    >>> data = ost.check_subtitle_hash(['hash1','hash2'])
-    >>> assert type(data) == dict
 
 ## Get MD5 for a subtitle file
 
@@ -126,6 +122,14 @@ For documentation purposes, it is more clear to do it this way:
     ...                   'subcontent': get_gzip_base64_encoded(path.join(Test.path, Test.subtitle))}}
     ...     url = ost.upload_subtitles(params)
     ...     assert type(url) == str
+
+
+## Check if subtitle hash exists.
+
+Check if multiple subtitles exist on opensubtitles.org at once by passing the MD5 hash of all subtitle files as parameter.
+
+    >>> data = ost.check_subtitle_hash([md5])
+    >>> assert type(data) == dict
 
 
 ## Check Movie Hash
@@ -176,7 +180,43 @@ This method can be used to retrive movie information available on IMDB.
 Opensubtitles.org uses external program for retrieving info for every query.
 Overuse of this function can result in UserAgent being disabled, instead use some 3rd party library for retrieving info from IMDB.
 
-    >>> data = ost.get_imdb_movie_details(imdb_id)
+    >>> data = ost.get_imdb_movie_details(imdb_id) # doctest: +SKIP
+    >>> assert type(data) == dict # doctest: +SKIP
+
+
+## Rate subtitle
+
+Allows logged in users to vote subtitles.
+Score must be between 1 to 10.
+
+    >>> data = ost.subtitles_votes({'idsubtitle':id_subtitle,'score':'5'})
+    >>> assert type(data) == dict
+
+
+## Get Comments
+
+Retrive comments about subtitles using subtitle id.
+
+    >>> data = ost.get_comments([id_subtitle])
+    >>> assert type(data) == dict
+
+
+## Add a comment
+
+Allows logged in users to comment on subtitles.
+Optional 'badsubtitles' field can be set to 1 to flag subtitle as bad.
+
+    >>> ost.add_comment({'idsubtitle':id_subtitle,'comment':'Thanks'})
+    True
+
+
+## Request for new subtitle
+
+You can request for a new subtitle in case it doesn't exit on opensubtitles.org
+Use this method only if subtitle was not found for a given IMDB not moviehash.
+Optional 'comment' can be passed in dictionary to indicate movie release name.
+
+    >>> data = ost.add_request({'sublanguageid':'eng','idmovieimdb':imdb_id})
     >>> assert type(data) == dict
 
 

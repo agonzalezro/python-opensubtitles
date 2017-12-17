@@ -229,22 +229,42 @@ class OpenSubtitles(object):
         self.data = self.xmlrpc.GetIMDBMovieDetails(self.token,imdb_id)
         return self._get_from_data_or_none('data')
 
-    def insert_movie(self):
-        # array InsertMovie( $token, array('moviename' => $moviename, 'movieyear' => $movieyear) )
-        raise NotImplementedError
+    def insert_movie(self,movie_info):
+        '''Insert a movie that doesn't exist in database.
+        Returns True if movie was successfully inserted.
+        :param movie_info: Dictionary with moviename and movieyear
+        '''
+        self.data = self.xmlrpc.InsertMovie(self.token,movie_info)
+        return '200' in self.data.get('status')
 
-    def subtitles_vote(self):
-        # array SubtitlesVote( $token, array('idsubtitle' => $idsubtitle, 'score' => $score) )
-        raise NotImplementedError
+    def subtitles_votes(self,vote):
+        '''Give rating to subtitle.
+        Returns Subtitle Rating, Total number of votes and ID of Subtitle if rating was successful else None.
+        :param vote: Dictionay with idsubtitle and score.
+        '''
+        self.data = self.xmlrpc.SubtitlesVote(self.token,vote)
+        return self._get_from_data_or_none('data')
 
-    def get_comments(self):
-        # array GetComments( $token, array($idsubtitle, $idsubtitle, ...))
-        raise NotImplementedError
+    def get_comments(self,subtitle_ids):
+        '''Get Comments about subtitles.
+        Returns dictionary mapping subtitleid and comments.
+        :param subtitle_ids: list of subtitle id's.
+        '''
+        self.data = self.xmlrpc.GetComments(self.token,subtitle_ids)
+        return self._get_from_data_or_none('data')
 
-    def add_comment(self):
-        # array AddComment( $token, array('idsubtitle' => $idsubtitle, 'comment' => $comment, 'badsubtitle' => $int) )
-        raise NotImplementedError
+    def add_comment(self,comment):
+        '''Add a new comment to a subtitle.
+        Return True if comment was added successfully.
+        :param comment: Dictionary with idsubtitle, comment, badsubtitle(flag).
+        '''
+        self.data = self.xmlrpc.AddComment(self.token,comment)
+        return '200' in self.data.get('status')
 
-    def add_request(self):
-        # array AddRequest( $token, array('sublanguageid' => $sublanguageid, 'idmovieimdb' => $idmovieimdb, 'comment' => $comment ) )
-        raise NotImplementedError
+    def add_request(self,data):
+        '''Request for a subtitle not available on opensubtitles.org
+        Returns request url.
+        :param data: Dictionary with sublanguageid, idmovieimdb and an optional comment.
+        '''
+        self.data = self.xmlrpc.AddRequest(self.token,data)
+        return self._get_from_data_or_none('data')
