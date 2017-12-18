@@ -13,6 +13,7 @@ pip install -e git+https://github.com/agonzalezro/python-opensubtitles#egg=pytho
 ## Configuring the test environment
 
 Before you start running tests (if you are only reading the documentation, of course, you don't need to do it :D), you must provide a correct video path and subtitle path.
+
     >>> from os import path
     >>> class Test(object):
     ...     username = 'doctest'
