@@ -124,6 +124,20 @@ For documentation purposes, it is more clear to do it this way:
     ...     assert type(url) == str
 
 
+## Download of subtitles
+
+Download subtitles from opensubtitles.org:
+
+    >>> data = ost.download_subtitles([id_subtitle], override_filenames={'id_subtitle': 'output_filename.srt'}, output_directory='PATH/TO/DIR', extension='srt')
+    >>> assert type(data) == dict
+
+The only required parameter is a list of IDs of subtitle files.
+
+The optional parameters include an option to override the original file names of the subtitle files, the provision of a specific download directory and the subtitle type in the form of the file extension (if the original file names are kept).
+
+Note that OpenSubtitles restricts downloads of subtitle files to 20 at a time.
+
+
 ## Check if subtitle hash exists.
 
 Check if multiple subtitles exist on opensubtitles.org at once by passing the MD5 hash of all subtitle files as parameter.
