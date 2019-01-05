@@ -138,10 +138,13 @@ class OpenSubtitles(object):
         raise NotImplementedError
 
     def download_subtitles(self, ids, override_filenames=None,
-                           output_directory='.', extension='srt'):
+                           output_directory='.', extension='srt',
+                           return_decoded_data=False):
         """
-        Returns a dictionary with max. 20 IDs of and paths to all
-        successfully downloaded subtitle files, otherwise None.
+        Returns a dictionary with max. 20 IDs if download was succesfull,
+        otherwise None. Dictionary contains paths to all successfully downloaded 
+        subtitle files if return_decoded_data = False (default) 
+        and `decoded_data` of subtitles otherwise.
 
         Be aware that if you provide an override_filenames dictionary
         containing duplicate values (the same file name for different
@@ -158,6 +161,8 @@ class OpenSubtitles(object):
                 only applicable if only subtitle file IDs are provided
         :param output_directory: path to directory to which to write files
                 (defaults to directory the script is run in)
+        :param return_decoded_data: whether to return decoded subtitles
+                instead of paths to files
         """
         override_filenames = override_filenames or {}
         successful = {}
@@ -183,6 +188,8 @@ class OpenSubtitles(object):
             if not decoded_data:
                 print("An error occurred while decoding subtitle "
                       "file ID {}.".format(subfile_id), file=sys.stderr)
+            elif return_decoded_data:
+                successful[subfile_id] = decoded_data
             else:
                 fname = override_filenames.get(subfile_id,
                                                subfile_id + '.' + extension)
