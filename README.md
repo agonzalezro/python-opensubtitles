@@ -64,6 +64,7 @@ If you do a simple search for a subtitle, you will receive a list of all matchin
 
     >>> data = ost.search_subtitles([{'sublanguageid': 'all', 'moviehash': hash, 'moviebytesize': size}])
     >>> id_subtitle = data[0].get('IDSubtitle')
+    >>> id_subtitle_file = data[0].get('IDSubtitleFile')
     >>> id_sub_movie_file = data[0].get('IDSubMovieFile')
     >>> assert type(data) == list
 
@@ -128,7 +129,7 @@ For documentation purposes, it is more clear to do it this way:
 
 Download subtitles from opensubtitles.org:
 
-    >>> data = ost.download_subtitles([id_subtitle], override_filenames={'id_subtitle': 'output_filename.srt'}, output_directory='PATH/TO/DIR', extension='srt')
+    >>> data = ost.download_subtitles([id_subtitle_file], override_filenames={id_subtitle_file: 'output_filename.srt'}, output_directory='PATH/TO/DIR', extension='srt')
     >>> assert type(data) == dict
 
 The only required parameter is a list of IDs of subtitle files.
