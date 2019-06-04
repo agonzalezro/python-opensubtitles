@@ -22,13 +22,13 @@ class OpenSubtitles(object):
     def __init__(self, language=None, user_agent=None):
         """
         Initialize the OpenSubtitles client
-        
+
         :param language: language for login
         :param user_agent: User Agent to include with requests.
             Can be specified here, via the OS_USER_AGENT environment variable,
             or via Settings.USER_AGENT (default)
-            
-            For more information: http://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst#Howtorequestanewuseragent 
+
+            For more information: http://trac.opensubtitles.org/projects/opensubtitles/wiki/DevReadFirst#Howtorequestanewuseragent
         """
         self.language = language or Settings.LANGUAGE
         self.token = None
@@ -138,12 +138,13 @@ class OpenSubtitles(object):
         raise NotImplementedError
 
     def download_subtitles(self, ids, override_filenames=None,
-                           output_directory='.', extension='srt',
+                           output_directory='.', override_directories=None,
+                           extension='srt',
                            return_decoded_data=False):
         """
         Returns a dictionary with max. 20 IDs if download was succesfull,
-        otherwise None. Dictionary contains paths to all successfully downloaded 
-        subtitle files if return_decoded_data = False (default) 
+        otherwise None. Dictionary contains paths to all successfully downloaded
+        subtitle files if return_decoded_data = False (default)
         and `decoded_data` of subtitles otherwise.
 
         Be aware that if you provide an override_filenames dictionary
@@ -161,10 +162,16 @@ class OpenSubtitles(object):
                 only applicable if only subtitle file IDs are provided
         :param output_directory: path to directory to which to write files
                 (defaults to directory the script is run in)
+        :param override_directories: optional dictionary with the output
+                directories for specific subtitle files; for keys use
+                file IDs (as strings), for values use absolute paths to the
+                directories (file name excluded). If not defined, all files
+                are saved to output_directory.
         :param return_decoded_data: whether to return decoded subtitles
                 instead of paths to files
         """
         override_filenames = override_filenames or {}
+        override_directories = override_directories or {}
         successful = {}
 
         # OpenSubtitles will accept a maximum of 20 IDs for download
@@ -193,7 +200,9 @@ class OpenSubtitles(object):
             else:
                 fname = override_filenames.get(subfile_id,
                                                subfile_id + '.' + extension)
-                fpath = os.path.join(output_directory, fname)
+                directory = override_directories.get(subfile_id,
+                                                     output_directory)
+                fpath = os.path.join(directory, fname)
 
                 try:
                     with open(fpath, 'w') as f:
