@@ -7,7 +7,7 @@ subtitles database. This class is a wrapper for the common methods used by the O
 
 If you are installing this module with `pip`, please use the following path to use the latest version:
 ```
-pip install -e git+https://github.com/agonzalezro/python-opensubtitles#egg=python-opensubtitles
+pip install -e git+https://github.com/arvand/python-opensubtitles#egg=python-opensubtitles
 ```
 
 ## Configuring the test environment
