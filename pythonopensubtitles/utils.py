@@ -3,21 +3,46 @@ import os
 import hashlib
 import zlib
 import base64
+from platform import python_version_tuple
+from warnings import warn
+
+try:
+    if int(python_version_tuple()[0]) < 3:
+        raise ImportError
+    from charset_normalizer import detect
+except ImportError:
+    try:
+        from cchardet import detect
+    except ImportError:
+        try:
+            from chardet import detect
+            warn('python chardet is installed but could be unreliable, upgrade to python 3 and install '
+                 'charset-normalizer or cchardet.')
+        except ImportError:
+            def detect(bytes_str):
+                return None
 
 
-def decompress(data, encoding):
+def decompress(data, enable_encoding_guessing=True):
     """
     Convert a base64-compressed subtitles file back to a string.
-
     :param data: the compressed data
-    :param encoding: the encoding of the original file (e.g. utf-8, latin1)
+    :param bool enable_encoding_guessing:
     """
+
+    raw_subtitle = zlib.decompress(base64.b64decode(data), 16 + zlib.MAX_WBITS)
+    encoding_detection = detect(raw_subtitle) if enable_encoding_guessing is True else None
+
+    if encoding_detection is None:
+        return raw_subtitle.decode('utf_8', errors='ignore')
+
     try:
-        return zlib.decompress(base64.b64decode(data),
-                               16 + zlib.MAX_WBITS).decode(encoding)
+        my_decoded_str = raw_subtitle.decode(encoding_detection['encoding'])
     except UnicodeDecodeError as e:
         print(e)
         return
+
+    return my_decoded_str
 
 
 def get_gzip_base64_encoded(file_path):
