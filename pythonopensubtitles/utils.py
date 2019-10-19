@@ -28,8 +28,8 @@ def get_gzip_base64_encoded(file_path):
 def get_md5(file_path):
     '''Return the md5 of a file.
     '''
-    f = open(file_path, 'rb').read()
-    return hashlib.md5(f).hexdigest()
+    with open(file_path, 'rb') as f:
+        return hashlib.md5(f.read()).hexdigest()
 
 
 class File(object):

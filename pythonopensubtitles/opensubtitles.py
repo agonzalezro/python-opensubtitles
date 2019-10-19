@@ -4,10 +4,12 @@ import os
 import os.path
 import sys
 
-try:                    #Python 2
+try:
+    #Python 2
     from xmlrpclib import ServerProxy, Transport
     from settings import Settings
-except ImportError:     #Python 3
+except ImportError:
+    #Python 3
     from xmlrpc.client import ServerProxy, Transport
     from .settings import Settings
 
@@ -100,7 +102,7 @@ class OpenSubtitles(object):
 
     def search_movies_on_imdb(self, params):
         self.data = self.xmlrpc.SearchMoviesOnIMDB(self.token, params)
-        return self.data
+        return self._get_from_data_or_none('data')
 
     def search_to_mail(self):
         # array SearchToMail( $token, array( $sublanguageid, $sublanguageid, ...), array( array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), array( 'moviehash' => $moviehash, 'moviesize' => $moviesize), ...) )'
@@ -181,6 +183,7 @@ class OpenSubtitles(object):
             ids = ids[:20]
 
         self.data = self.xmlrpc.DownloadSubtitles(self.token, ids)
+
         encoded_data = self._get_from_data_or_none('data')
 
         if not encoded_data:
