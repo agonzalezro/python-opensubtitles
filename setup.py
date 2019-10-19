@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from platform import python_version_tuple
 import sys, os
 
 version = '0.2'
@@ -15,4 +16,10 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     include_package_data=True,
     zip_safe=False,
+    extras_require={
+        'Support for encoding detection on downloaded subtitle':
+            [
+                'charset_normalizer' if int(python_version_tuple()[0]) >= 3 else 'chardet'
+            ],
+    }
 )

@@ -192,8 +192,7 @@ class OpenSubtitles(object):
         for item in encoded_data:
             subfile_id = item['idsubtitlefile']
 
-            decoded_data = (decompress(item['data'], 'utf-8')
-                            or decompress(item['data'], 'latin1'))
+            decoded_data = decompress(item['data'])
 
             if not decoded_data:
                 print("An error occurred while decoding subtitle "
