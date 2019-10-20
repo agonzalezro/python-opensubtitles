@@ -46,3 +46,16 @@ ost.download_subtitles([id_subtitle_file], output_directory='/tmp', extension='s
 
 If you want to see more info you can take a look to the old `doctest`s on the
 [APPENDIX.md file](https://github.com/agonzalezro/python-opensubtitles/blob/master/APPENDIX.md).
+
+## Release a new version
+
+Probably you will not need to run this, but just FTR:
+
+```bash
+$ # Edit setup.py to change the version
+$ pip install twine
+$ python3 setup.py sdist bdist_wheel
+$ python3 -m twine upload dist/*
+```
+
+The previous command will upload a release to PyPI.

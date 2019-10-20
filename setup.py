@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from platform import python_version_tuple
 import sys, os
 
-version = '0.2'
+version = '0.4'
 
 setup(
     name='python-opensubtitles',
