@@ -1,5 +1,7 @@
 # python-opensubtitles
 
+![CircleCI](https://img.shields.io/circleci/build/github/agonzalezro/python-opensubtitles?style=flat-square)
+
 Simple module to access to the [OpenSubtitles.org](http://opensubtitles.org)
 subtitles database. This class is a wrapper for the common methods used by the OpenSubtitles API.
 
