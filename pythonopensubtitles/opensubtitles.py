@@ -207,7 +207,7 @@ class OpenSubtitles(object):
                 fpath = os.path.join(directory, fname)
 
                 try:
-                    with open(fpath, 'w') as f:
+                    with open(fpath, 'w', encoding="utf-8") as f:
                         f.write(decoded_data)
                     successful[subfile_id] = fpath
                 except IOError as e:
