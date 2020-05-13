@@ -23,7 +23,7 @@ except ImportError:
                 return None
 
 
-def decompress(data, enable_encoding_guessing=True):
+def decompress(data, enable_encoding_guessing=True, decoding='utf-8'):
     """
     Convert a base64-compressed subtitles file back to a string.
     :param data: the compressed data
@@ -34,7 +34,7 @@ def decompress(data, enable_encoding_guessing=True):
     encoding_detection = detect(raw_subtitle) if enable_encoding_guessing is True else None
 
     if encoding_detection is None:
-        return raw_subtitle.decode('utf_8', errors='ignore')
+        return raw_subtitle.decode(decoding, errors='ignore')
 
     try:
         my_decoded_str = raw_subtitle.decode(encoding_detection['encoding'])
