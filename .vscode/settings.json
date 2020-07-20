@@ -1,0 +1,14 @@
+{
+    "python.pythonPath": "/home/juan/.virtualenvs/osubtitles/bin/python",
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./pythonopensubtitles",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.linting.enabled": true
+}

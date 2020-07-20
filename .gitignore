@@ -5,5 +5,3 @@ dist
 *.egg-info/
 .idea
 *.iml
-.vscode/settings.json
-.gitignore
