@@ -1,4 +1,4 @@
-from pythonopensubtitles.opensubtitles import *
+from pythonopensubtitles.opensubtitles import OpenSubtitles
 
 import base64
 import json
@@ -6,7 +6,7 @@ import os
 import tempfile
 import unittest
 import zlib
-
+import unittest.mock as mock 
 
 class MockServerProxy:
     pass
@@ -131,7 +131,7 @@ class TestOpenSubtitles(unittest.TestCase):
         }
         assert self.ost.report_wrong_movie_hash([])
 
-    def test_report_wrong_movie_hash(self):
+    def test_report_wrong_movie_hash_404(self):
         self.mock.ReportWrongMovieHash = lambda *_: {
             'status': '404',
         }
@@ -193,6 +193,15 @@ class TestOpenSubtitles(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdirname:
             data = self.ost.download_subtitles(['id'], output_directory=tmpdirname)
         
+        assert data, data
+    
+    @mock.patch('pythonopensubtitles.opensubtitles.decompress', return_value='test_decoded_data')
+    def test_download_subtitles_force_encoding(self, mock_decompress):
+        self.mock.DownloadSubtitles = lambda *_: fixture('download_subtitles')
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            data = self.ost.download_subtitles(['id'], output_directory=tmpdirname, encoding='test_encoding')
+            encoded_data=self.ost._get_from_data_or_none('data')
+            mock_decompress.assert_called_with(encoded_data[0]['data'], encoding='test_encoding')
         assert data, data
 
 def fixture(name):
