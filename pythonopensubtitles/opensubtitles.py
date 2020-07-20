@@ -143,7 +143,7 @@ class OpenSubtitles(object):
                            output_directory='.', override_directories=None,
                            extension='srt',
                            return_decoded_data=False,
-                            encoding='utf-8'):
+                           encoding='utf-8'):
         """
         Returns a dictionary with max. 20 IDs if download was succesfull,
         otherwise None. Dictionary contains paths to all successfully downloaded
