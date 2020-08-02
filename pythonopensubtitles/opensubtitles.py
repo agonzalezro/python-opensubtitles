@@ -142,7 +142,8 @@ class OpenSubtitles(object):
     def download_subtitles(self, ids, override_filenames=None,
                            output_directory='.', override_directories=None,
                            extension='srt',
-                           return_decoded_data=False):
+                           return_decoded_data=False,
+                           encoding='utf-8'):
         """
         Returns a dictionary with max. 20 IDs if download was succesfull,
         otherwise None. Dictionary contains paths to all successfully downloaded
@@ -171,6 +172,8 @@ class OpenSubtitles(object):
                 are saved to output_directory.
         :param return_decoded_data: whether to return decoded subtitles
                 instead of paths to files
+        :param encoding: specify the encoding of the subtitles to properly
+                decode the data.
         """
         override_filenames = override_filenames or {}
         override_directories = override_directories or {}
@@ -192,7 +195,7 @@ class OpenSubtitles(object):
         for item in encoded_data:
             subfile_id = item['idsubtitlefile']
 
-            decoded_data = decompress(item['data'])
+            decoded_data = decompress(item['data'], encoding=encoding)
 
             if not decoded_data:
                 print("An error occurred while decoding subtitle "

@@ -23,18 +23,19 @@ except ImportError:
                 return None
 
 
-def decompress(data, enable_encoding_guessing=True):
+def decompress(data, enable_encoding_guessing=True, encoding='utf-8'):
     """
     Convert a base64-compressed subtitles file back to a string.
     :param data: the compressed data
     :param bool enable_encoding_guessing:
+    :param str decoding: if not enable_encoding_guessing you can specify the encoding here. e.g. "latin"
     """
 
     raw_subtitle = zlib.decompress(base64.b64decode(data), 16 + zlib.MAX_WBITS)
     encoding_detection = detect(raw_subtitle) if enable_encoding_guessing is True else None
 
     if encoding_detection is None:
-        return raw_subtitle.decode('utf_8', errors='ignore')
+        return raw_subtitle.decode(encoding, errors='ignore')
 
     try:
         my_decoded_str = raw_subtitle.decode(encoding_detection['encoding'])
@@ -78,14 +79,14 @@ class File(object):
         if int(self.size) < 65536 * 2:
             return "SizeError"
 
-        for x in range(65536 // bytesize):
+        for _ in range(65536 // bytesize):
             buffer = f.read(bytesize)
             (l_value, ) = struct.unpack(longlongformat, buffer)
             hash += l_value
             hash = hash & 0xFFFFFFFFFFFFFFFF  # to remain as 64bit number
 
         f.seek(max(0, int(self.size) - 65536), 0)
-        for x in range(65536 // bytesize):
+        for _ in range(65536 // bytesize):
             buffer = f.read(bytesize)
             (l_value, ) = struct.unpack(longlongformat, buffer)
             hash += l_value

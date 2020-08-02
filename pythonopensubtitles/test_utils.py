@@ -1,9 +1,9 @@
-from pythonopensubtitles.utils import File, get_md5
+from pythonopensubtitles.utils import File, get_md5, decompress
 
 import os
 import tempfile
 import unittest
-
+import unittest.mock as mock
 
 class TestUtils(unittest.TestCase):
     def setUp(self):
@@ -23,3 +23,13 @@ class TestUtils(unittest.TestCase):
 
     def test_size(self):
         assert File(self.temp.name).size == "131072"
+
+    @mock.patch('pythonopensubtitles.utils.zlib')
+    @mock.patch('pythonopensubtitles.utils.detect')
+    @mock.patch('pythonopensubtitles.utils.base64')
+    def test_decompress(self, mock_base64, mock_detect, mock_zlib):
+        mock_raw_data = mock.MagicMock()
+        mock_zlib.decompress.return_value = mock_raw_data
+        mock_detect.return_value = None
+        decompress('test_base64data',enable_encoding_guessing=True,encoding='test_encoding')
+        mock_raw_data.decode.assert_called_with('test_encoding', errors='ignore')
