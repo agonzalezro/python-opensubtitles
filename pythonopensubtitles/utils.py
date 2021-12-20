@@ -47,8 +47,8 @@ def decompress(data, enable_encoding_guessing=True, encoding='utf-8'):
 
 
 def get_gzip_base64_encoded(file_path):
-    handler = open(file_path, mode='rb').read()
-    return base64.encodestring(zlib.compress(handler))
+    with open(file_path, mode="rb") as file:
+        return base64.encodebytes(zlib.compress(file.read())).decode("utf-8")
 
 
 def get_md5(file_path):
