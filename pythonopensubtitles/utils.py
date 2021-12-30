@@ -1,5 +1,6 @@
 import struct
 import os
+import sys
 import hashlib
 import zlib
 import base64
@@ -48,7 +49,11 @@ def decompress(data, enable_encoding_guessing=True, encoding='utf-8'):
 
 def get_gzip_base64_encoded(file_path):
     with open(file_path, mode="rb") as file:
-        return base64.encodebytes(zlib.compress(file.read())).decode("utf-8")
+        compressed_data = zlib.compress(file.read())
+        if sys.version_info[0] >= 3 and sys.version_info[1] >= 1:
+            return base64.encodebytes(compressed_data).decode("utf-8")
+        else:
+            return base64.encodestring(compressed_data).decode("utf-8")
 
 
 def get_md5(file_path):
